@@ -40,18 +40,18 @@ h1 {
     border-bottom: 1px solid black;
 
     min-height: 400px;
-    min-width: 99px;
-    max-width: 100px;
+    min-width: 119px;
+    max-width: 120px;
     float: left;
 }
 
 #draw-options > div {
     text-align: center;
     border-bottom: 1px solid black;
-    min-height: 50px;
-    max-height: 50px;
-    min-width: 49px;
-    max-width: 50px;
+    min-height: 59px;
+    max-height: 59px;
+    min-width: 59px;
+    max-width: 59px;
 }
 
 #draw-options div:nth-child(odd) {
