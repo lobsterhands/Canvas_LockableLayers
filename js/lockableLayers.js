@@ -26,10 +26,9 @@
     this.clickX = [];
     this.clickY = [];
     this.clickDrag = [];
-
     this.clickColor = [];
-
     this.clickSize = [];
+    this.drawToCanvas = true;
   };
 
 
@@ -57,7 +56,6 @@
     this.layers = []; // Store all layers
     this.layers.push(new Layer());
     this.curLayerIndex = 0;
-    console.log(this.layers[this.curLayerIndex]);
   };
 
   CanvasState.prototype.addClick = function(x, y, dragging) {
@@ -89,21 +87,24 @@
 
   CanvasState.prototype.drawAllLayers = function() {
     var ctx = this.ctx;
-    this.layers.forEach(function(layer) {
-      for(var i=0; i < layer.clickX.length; i++) {
-        ctx.beginPath();
-        if(layer.clickDrag[i] && i){
-          ctx.moveTo(layer.clickX[i-1], layer.clickY[i-1]);
-        }else{
-          ctx.moveTo(layer.clickX[i]-1, layer.clickY[i]);
+
+    for (var layerNum = 0; layerNum < this.layers.length; layerNum++) {
+      if (this.layers[layerNum].drawToCanvas) {
+        for(var i=0; i < this.layers[layerNum].clickX.length; i++) {
+          ctx.beginPath();
+          if(this.layers[layerNum].clickDrag[i] && i){
+            ctx.moveTo(this.layers[layerNum].clickX[i-1], this.layers[layerNum].clickY[i-1]);
+          }else{
+            ctx.moveTo(this.layers[layerNum].clickX[i]-1, this.layers[layerNum].clickY[i]);
+          }
+          ctx.lineTo(this.layers[layerNum].clickX[i], this.layers[layerNum].clickY[i]);
+          ctx.closePath();
+          ctx.strokeStyle = this.layers[layerNum].clickColor[i];
+          ctx.lineWidth = this.layers[layerNum].clickSize[i];
+          ctx.stroke();
         }
-        ctx.lineTo(layer.clickX[i], layer.clickY[i]);
-        ctx.closePath();
-        ctx.strokeStyle = layer.clickColor[i];
-        ctx.lineWidth = layer.clickSize[i];
-        ctx.stroke();
       }
-    })
+    }
   };
 
   CanvasState.prototype.changeLineWidth = function() {
@@ -121,6 +122,7 @@
       if (this.paint) {
         this.addClick(e.offsetX, e.offsetY, true); // Pass mouse coordinates
         this.redraw();
+        this.drawAllLayers();
       }
     });
   };
@@ -139,6 +141,7 @@
       // Passing 'false' for 'dragging' ensures there is not an undesired line
       // drawn between the last point of mouseUp and the current mouseDown
       this.redraw();
+      this.drawAllLayers();
     });
   };
 
@@ -166,9 +169,27 @@
 
   var newLayerBtn = document.getElementById('new-layer');
   newLayerBtn.innerHTML = "Layer: " + c.curLayerIndex;
+  var layers = document.getElementById('layers');
+  var newDiv = document.createElement('DIV');
+  newDiv.index = c.curLayerIndex;
+  newDiv.onclick = function() {
+    c.layers[this.index].drawToCanvas = (c.layers[this.index].drawToCanvas) ? false : true;
+  };
+  var newDivText = document.createTextNode("Layer: " + c.curLayerIndex);
+  newDiv.appendChild(newDivText);
+  layers.appendChild(newDiv);
   newLayerBtn.onclick = function() {
     c.createNewLayer();
     newLayerBtn.innerHTML = "Layer: " + c.curLayerIndex;
+    var layers = document.getElementById('layers');
+    var newDiv = document.createElement('DIV');
+    newDiv.index = c.curLayerIndex;
+    newDiv.onclick = function() {
+      c.layers[this.index].drawToCanvas = (c.layers[this.index].drawToCanvas) ? false : true;
+    };
+    var newDivText = document.createTextNode("Layer: " + c.curLayerIndex);
+    newDiv.appendChild(newDivText);
+    layers.appendChild(newDiv);
   };
 
   // Create a "Layer" class
