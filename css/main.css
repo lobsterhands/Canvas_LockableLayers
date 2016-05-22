@@ -37,10 +37,6 @@ h1 {
 #draw-options {
     border-top: 1px solid black;
     border-right: 1px solid black;
-    border-bottom: 1px solid black;
-
-    min-height: 400px;
-    min-width: 119px;
     max-width: 120px;
     float: left;
 }
@@ -52,6 +48,21 @@ h1 {
     max-height: 59px;
     min-width: 59px;
     max-width: 59px;
+}
+
+#layers {
+    border-right: 1px solid black;
+    min-width: 120px;
+    max-width: 120px;
+    float: left;
+}
+
+#layers > div {
+    text-align: center;
+    min-width: 120px;
+    min-height: 20px;
+    display: inline-block;
+    border-bottom: 1px solid black;
 }
 
 #draw-options div:nth-child(odd) {
