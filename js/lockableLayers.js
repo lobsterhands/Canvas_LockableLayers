@@ -21,8 +21,17 @@
     ctx.fillRect(this.x, this.y, this.width, this.height);
   };
 
-  var x = new Square(0, 0, 100, 100);
-  x.draw(ctx);
+
+  var Layer = function() {
+    this.clickX = [];
+    this.clickY = [];
+    this.clickDrag = [];
+
+    this.clickColor = [];
+
+    this.clickSize = [];
+  };
+
 
   /************************/
   /***** CANVAS CLASS *****/
@@ -34,63 +43,72 @@
     this.listenMouseDown();
     this.listenMouseMove();
     this.listenMouseUp();
-    this.listenKeyDown();
 
-    this.clickX = [];
-    this.clickY = [];
-    this.clickDrag = [];
-
-    this.clickColor = [];
     this.colors = [{text: "Black", hex: "#000000"}, {text: "Red", hex: "#FF0000"},
       {text: "Green", hex: "#00FF00"}, {text: "Blue", hex: "#0000FF"}];
     this.curColorIndex = 0;
     this.curColorName = this.colors[this.curColorIndex].text;
 
-    this.clickSize = [];
-    this.ctx.lineWidth = 5;
+    this.sizes = [{text: "Tiny", radius: 2}, {text: "Small", radius: 5},
+      {text: "Medium", radius: 10}, {text: "Large", radius: 15}];
+    this.curSizeIndex = 0;
+    this.curSizeName = this.sizes[this.curSizeIndex].text;
 
-
+    this.layers = []; // Store all layers
+    this.layers.push(new Layer());
+    this.curLayerIndex = 0;
+    console.log(this.layers[this.curLayerIndex]);
   };
 
   CanvasState.prototype.addClick = function(x, y, dragging) {
-    this.clickX.push(x);
-    this.clickY.push(y);
-    this.clickDrag.push(dragging);
-    this.clickColor.push(this.colors[this.curColorIndex].hex);
+    this.layers[this.curLayerIndex].clickX.push(x);
+    this.layers[this.curLayerIndex].clickY.push(y);
+    this.layers[this.curLayerIndex].clickDrag.push(dragging);
+    this.layers[this.curLayerIndex].clickColor.push(this.colors[this.curColorIndex].hex);
+    this.layers[this.curLayerIndex].clickSize.push(this.sizes[this.curSizeIndex].radius);
   };
 
   CanvasState.prototype.redraw = function() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear all
     this.ctx.lineJoin = "round";
 
-    for(var i=0; i < this.clickX.length; i++) {
+    for(var i=0; i < this.layers[this.curLayerIndex].clickX.length; i++) {
       this.ctx.beginPath();
-      if(this.clickDrag[i] && i){
-        this.ctx.moveTo(this.clickX[i-1], this.clickY[i-1]);
+      if(this.layers[this.curLayerIndex].clickDrag[i] && i){
+        this.ctx.moveTo(this.layers[this.curLayerIndex].clickX[i-1], this.layers[this.curLayerIndex].clickY[i-1]);
       }else{
-        this.ctx.moveTo(this.clickX[i]-1, this.clickY[i]);
+        this.ctx.moveTo(this.layers[this.curLayerIndex].clickX[i]-1, this.layers[this.curLayerIndex].clickY[i]);
       }
-      this.ctx.lineTo(this.clickX[i], this.clickY[i]);
+      this.ctx.lineTo(this.layers[this.curLayerIndex].clickX[i], this.layers[this.curLayerIndex].clickY[i]);
       this.ctx.closePath();
-      this.ctx.strokeStyle = this.clickColor[i];
+      this.ctx.strokeStyle = this.layers[this.curLayerIndex].clickColor[i];
+      this.ctx.lineWidth = this.layers[this.curLayerIndex].clickSize[i];
       this.ctx.stroke();
     }
   };
 
+  CanvasState.prototype.drawAllLayers = function() {
+    var ctx = this.ctx;
+    this.layers.forEach(function(layer) {
+      for(var i=0; i < layer.clickX.length; i++) {
+        ctx.beginPath();
+        if(layer.clickDrag[i] && i){
+          ctx.moveTo(layer.clickX[i-1], layer.clickY[i-1]);
+        }else{
+          ctx.moveTo(layer.clickX[i]-1, layer.clickY[i]);
+        }
+        ctx.lineTo(layer.clickX[i], layer.clickY[i]);
+        ctx.closePath();
+        ctx.strokeStyle = layer.clickColor[i];
+        ctx.lineWidth = layer.clickSize[i];
+        ctx.stroke();
+      }
+    })
+  };
+
   CanvasState.prototype.changeLineWidth = function() {
-    switch(this.ctx.lineWidth) {
-      case 5: this.ctx.lineWidth = 10;
-        break;
-
-      case 10: this.ctx.lineWidth = 20;
-        break;
-
-      case 20: this.ctx.lineWidth = 5;
-        break;
-
-      default:
-        break;
-    }
+    this.curSizeIndex = (this.curSizeIndex + 1) % this.sizes.length;
+    this.curSizeName = this.sizes[this.curSizeIndex].text;
   };
 
   CanvasState.prototype.changeColor = function() {
@@ -110,6 +128,7 @@
   CanvasState.prototype.listenMouseUp = function() {
     this.canvas.addEventListener('mouseup', (e) => {
       this.paint = false;
+      this.drawAllLayers();
     })
   };
 
@@ -123,12 +142,19 @@
     });
   };
 
+  CanvasState.prototype.createNewLayer = function() {
+    this.layers.push(new Layer());
+    this.curLayerIndex++;
+  };
+
 
   var c = new CanvasState(canvas);
 
-  var size = document.getElementById('size');
-  size.onclick = function() {
+  var sizeBtn = document.getElementById('size');
+  sizeBtn.innerHTML = "Size: " + c.curSizeName;
+  sizeBtn.onclick = function() {
     c.changeLineWidth();
+    sizeBtn.innerHTML = "Size: " + c.curSizeName;
   };
 
   var colorBtn = document.getElementById('color');
@@ -136,6 +162,13 @@
   colorBtn.onclick = function() {
     c.changeColor();
     colorBtn.innerHTML = "Color: " + c.curColorName;
+  };
+
+  var newLayerBtn = document.getElementById('new-layer');
+  newLayerBtn.innerHTML = "Layer: " + c.curLayerIndex;
+  newLayerBtn.onclick = function() {
+    c.createNewLayer();
+    newLayerBtn.innerHTML = "Layer: " + c.curLayerIndex;
   };
 
   // Create a "Layer" class
