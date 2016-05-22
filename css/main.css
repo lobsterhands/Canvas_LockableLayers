@@ -60,7 +60,7 @@ h1 {
 #layers > div {
     text-align: center;
     min-width: 120px;
-    min-height: 20px;
+    min-height: 30px;
     display: inline-block;
     border-bottom: 1px solid black;
 }
