@@ -1,0 +1,25 @@
+{
+  "name": "canvas-lockable-layers",
+  "version": "1.0.0",
+  "description": "Lockable layers in Canvas.",
+  "main": "lockableLayers.js",
+  "scripts": {
+    "build": "babel js -d build",
+    "browserbuild": "browserify ./js/lockableLayers.js > ./build/mirrorDraw_browser.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lobsterhands/Canvas_LockableLayers.git"
+  },
+  "author": "Lyle Denman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lobsterhands/Canvas_LockableLayers/issues"
+  },
+  "homepage": "https://github.com/lobsterhands/Canvas_LockableLayers#readme",
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
+    "browserify": "^13.0.0"
+  }
+}

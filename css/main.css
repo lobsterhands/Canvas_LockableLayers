@@ -1,0 +1,59 @@
+canvas {
+    text-align: center;
+    border: 1px solid black;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+
+    cursor: crosshair;
+    float: left;
+}
+
+#wrapper {
+    min-height: 100%;
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 0 5%;
+    clear: both;
+}
+
+.align-horizontally canvas,
+.align-horizontally div {
+    margin: 0 auto;
+    text-align: center;
+    float: left;
+}
+
+h1 {
+    text-align: center;
+}
+
+#draw-options {
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+
+    min-height: 400px;
+    min-width: 99px;
+    max-width: 100px;
+    float: left;
+}
+
+#draw-options > div {
+    text-align: center;
+    border-bottom: 1px solid black;
+    min-height: 50px;
+    max-height: 50px;
+    min-width: 49px;
+    max-width: 50px;
+}
+
+#draw-options div:nth-child(odd) {
+    border-right: 1px solid black;
+}
