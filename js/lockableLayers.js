@@ -33,7 +33,7 @@
     this.clickDrag = [];
     this.clickColor = [];
     this.clickSize = [];
-    this.drawToCanvas = true;
+    this.drawToCanvas = true; // Toggled by checkbox: Hide
   };
 
 
@@ -59,9 +59,6 @@
     this.curSizeName = this.sizes[this.curSizeIndex].text;
 
     this.layers = []; // Store all layers
-    /* @todo: Layers can be selected at random -- changes will only affect
-    selected layer. Layers can be re-ordered */
-    // this.layers.push(new Layer());
     this.curLayerIndex = -1; // curLayerIndex is incremented in createNewLayer()
     this.createNewLayer();
   };
@@ -85,20 +82,18 @@
     var newDivText = document.createTextNode("Layer: " + this.curLayerIndex);
     newDiv.appendChild(newDivText);
     layers.appendChild(newDiv);
-    this.appendCheckbox(newDiv);
+    this.appendHideCheckbox(newDiv);
+    this.appendCurrentCheckbox(newDiv);
   };
 
-  CanvasState.prototype.appendCheckbox = function(parent) {
+  CanvasState.prototype.appendHideCheckbox = function(parent) {
     var checkbox = document.createElement('input');
     checkbox.type = "checkbox";
-    checkbox.name = "name";
-    checkbox.value = "value";
     checkbox.id = parent.index;
     checkbox.onclick = () => {
       this.layers[checkbox.id].drawToCanvas = (this.layers[checkbox.id].drawToCanvas) ? false : true;
       this.redraw();
     };
-
     var label = document.createElement('label');
     label.htmlFor = checkbox.id;
     label.appendChild(document.createTextNode('Hide'));
@@ -109,6 +104,28 @@
     parent.appendChild(checkbox);
     parent.appendChild(label);
   };
+
+  CanvasState.prototype.appendCurrentCheckbox = function(parent) {
+    var checkbox = document.createElement('input');
+    checkbox.type = "checkbox";
+    checkbox.name = "current";
+    checkbox.id = parent.index;
+    checkbox.checked = true;
+    checkbox.onclick = () => {
+      this.curLayerIndex = checkbox.id;
+    };
+
+    var label = document.createElement('label');
+    label.htmlFor = checkbox.id;
+    label.appendChild(document.createTextNode('Current'));
+
+    var br = document.createElement("br");
+
+    parent.appendChild(br);
+    parent.appendChild(checkbox);
+    parent.appendChild(label);
+  };
+
 
   CanvasState.prototype.addClick = function(x, y, dragging) {
     this.layers[this.curLayerIndex].clickX.push(x);
@@ -168,11 +185,13 @@
 
   CanvasState.prototype.listenMouseDown = function() {
     this.canvas.addEventListener('mousedown', (e) => {
-      this.paint = true;
-      this.addClick(e.offsetX, e.offsetY, false); // Pass mouse coordinates
-      // Passing 'false' for 'dragging' ensures there is not an undesired line
-      // drawn between the last point of mouseUp and the current mouseDown
-      this.redraw();
+      if (this.layers[this.curLayerIndex].drawToCanvas) {
+        this.paint = true;
+        this.addClick(e.offsetX, e.offsetY, false); // Pass mouse coordinates
+        // Passing 'false' for 'dragging' ensures there is not an undesired line
+        // drawn between the last point of mouseUp and the current mouseDown
+        this.redraw();
+      }
     });
   };
 
