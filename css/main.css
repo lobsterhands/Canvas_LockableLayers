@@ -1,3 +1,9 @@
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
 canvas {
     text-align: center;
     border: 1px solid black;
@@ -50,6 +56,10 @@ h1 {
     max-width: 59px;
 }
 
+#draw-options > div:hover {
+    cursor: pointer;
+}
+
 #layers {
     border-right: 1px solid black;
     min-width: 120px;
@@ -67,4 +77,8 @@ h1 {
 
 #draw-options div:nth-child(odd) {
     border-right: 1px solid black;
+}
+
+.current-layer {
+    background: #40a070;
 }
