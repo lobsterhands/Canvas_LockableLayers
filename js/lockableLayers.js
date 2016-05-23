@@ -66,7 +66,7 @@
 
   CanvasState.prototype.createNewLayer = function() {
     this.layers.push(new Layer());
-    this.curLayerIndex++;
+    this.curLayerIndex = this.layers.length-1;
     this.createNewLayerDiv();
   };
 
@@ -74,18 +74,18 @@
     this.noLayerSelected = false;
     var newLayerBtn = document.getElementById('new-layer');
 
-    newLayerBtn.onclick = function() {
-      if (c.layers.length > 4) {
+    newLayerBtn.onclick = () => {
+      if (this.layers.length > 4) {
         alert("You've reached the current layer limit.");
         return;
       }
-      c.createNewLayer(); // @lyle: This shouldn't be called by c
+      this.createNewLayer();
     };
     newLayerBtn.innerHTML = "Create new Layer";
     var layers = document.getElementById('layers');
     var newDiv = document.createElement('DIV');
     newDiv.index = this.curLayerIndex;
-    var newDivText = document.createTextNode("Layer: " + (this.curLayerIndex + 1));
+    var newDivText = document.createTextNode("Layer: " + this.layers.length);
     newDiv.appendChild(newDivText);
     layers.appendChild(newDiv);
     this.appendHideCheckbox(newDiv);
@@ -228,7 +228,7 @@
   };
 
   var c = new CanvasState(canvas); // Create instance of CanvasState
-  
+
   var sizeBtn = document.getElementById('size');
   sizeBtn.innerHTML = "Size: " + c.curSizeName;
   sizeBtn.onclick = function() {
