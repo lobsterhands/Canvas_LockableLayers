@@ -1,30 +1,12 @@
 /**
  * Created by Lyle Denman on 5/22/16.
- * 
- * This started with a lot of help from: 
+ *
+ * This started with a lot of help from:
  * http://www.williammalone.com/articles/create-html5-canvas-javascript-drawing-app/
  */
 (function(){
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-
-  /************************/
-  /***** SQUARE CLASS *****/
-  /************************/
-  var Square = function(x, y, w, fillColor) {
-    this.x = x || 0; // Default to 0 if no x provided, etc
-    this.y = y || 0;
-    this.width = w || 1;
-    this.height = w || 1;
-    this.fillColor = fillColor || "#FFFFFF";
-  };
-
-  Square.prototype.draw = function(ctx) {
-    ctx.fillStyle = this.fillColor;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-  };
-
-
   /************************/
   /***** LAYER CLASS *****/
   /************************/
