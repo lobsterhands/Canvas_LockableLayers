@@ -22,6 +22,11 @@
   };
 
 
+  /************************/
+  /***** LAYER CLASS *****/
+  /************************/
+  // Create a "Layer" class
+  // One instance of Layer will hold all activity drawn to that layer.
   var Layer = function() {
     this.clickX = [];
     this.clickY = [];
@@ -54,8 +59,55 @@
     this.curSizeName = this.sizes[this.curSizeIndex].text;
 
     this.layers = []; // Store all layers
+    /* @todo: Layers can be selected at random -- changes will only affect
+    selected layer. Layers can be re-ordered */
+    // this.layers.push(new Layer());
+    this.curLayerIndex = -1; // curLayerIndex is incremented in createNewLayer()
+    this.createNewLayer();
+  };
+
+  CanvasState.prototype.createNewLayer = function() {
     this.layers.push(new Layer());
-    this.curLayerIndex = 0;
+    this.curLayerIndex++;
+    this.createNewLayerDiv();
+  };
+
+  CanvasState.prototype.createNewLayerDiv = function() {
+    var newLayerBtn = document.getElementById('new-layer');
+
+    newLayerBtn.onclick = function() {
+      c.createNewLayer();
+    };
+    newLayerBtn.innerHTML = "Layer: " + this.curLayerIndex;
+    var layers = document.getElementById('layers');
+    var newDiv = document.createElement('DIV');
+    newDiv.index = this.curLayerIndex;
+    var newDivText = document.createTextNode("Layer: " + this.curLayerIndex);
+    newDiv.appendChild(newDivText);
+    layers.appendChild(newDiv);
+    this.appendCheckbox(newDiv);
+  };
+
+  CanvasState.prototype.appendCheckbox = function(parent) {
+    var checkbox = document.createElement('input');
+    checkbox.type = "checkbox";
+    checkbox.name = "name";
+    checkbox.value = "value";
+    checkbox.id = parent.index;
+    checkbox.onclick = () => {
+      this.layers[checkbox.id].drawToCanvas = (this.layers[checkbox.id].drawToCanvas) ? false : true;
+      this.redraw();
+    };
+
+    var label = document.createElement('label');
+    label.htmlFor = checkbox.id;
+    label.appendChild(document.createTextNode('Hide'));
+
+    var br = document.createElement("br");
+
+    parent.appendChild(br);
+    parent.appendChild(checkbox);
+    parent.appendChild(label);
   };
 
   CanvasState.prototype.addClick = function(x, y, dragging) {
@@ -69,24 +121,6 @@
   CanvasState.prototype.redraw = function() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear all
     this.ctx.lineJoin = "round";
-
-    for(var i=0; i < this.layers[this.curLayerIndex].clickX.length; i++) {
-      this.ctx.beginPath();
-      if(this.layers[this.curLayerIndex].clickDrag[i] && i){
-        this.ctx.moveTo(this.layers[this.curLayerIndex].clickX[i-1], this.layers[this.curLayerIndex].clickY[i-1]);
-      }else{
-        this.ctx.moveTo(this.layers[this.curLayerIndex].clickX[i]-1, this.layers[this.curLayerIndex].clickY[i]);
-      }
-      this.ctx.lineTo(this.layers[this.curLayerIndex].clickX[i], this.layers[this.curLayerIndex].clickY[i]);
-      this.ctx.closePath();
-      this.ctx.strokeStyle = this.layers[this.curLayerIndex].clickColor[i];
-      this.ctx.lineWidth = this.layers[this.curLayerIndex].clickSize[i];
-      this.ctx.stroke();
-    }
-  };
-
-  CanvasState.prototype.drawAllLayers = function() {
-    var ctx = this.ctx;
 
     for (var layerNum = 0; layerNum < this.layers.length; layerNum++) {
       if (this.layers[layerNum].drawToCanvas) {
@@ -122,7 +156,6 @@
       if (this.paint) {
         this.addClick(e.offsetX, e.offsetY, true); // Pass mouse coordinates
         this.redraw();
-        this.drawAllLayers();
       }
     });
   };
@@ -130,7 +163,6 @@
   CanvasState.prototype.listenMouseUp = function() {
     this.canvas.addEventListener('mouseup', (e) => {
       this.paint = false;
-      this.drawAllLayers();
     })
   };
 
@@ -141,17 +173,10 @@
       // Passing 'false' for 'dragging' ensures there is not an undesired line
       // drawn between the last point of mouseUp and the current mouseDown
       this.redraw();
-      this.drawAllLayers();
     });
   };
 
-  CanvasState.prototype.createNewLayer = function() {
-    this.layers.push(new Layer());
-    this.curLayerIndex++;
-  };
-
-
-  var c = new CanvasState(canvas);
+  var c = new CanvasState(canvas); // Create instance of CanvasState
 
   var sizeBtn = document.getElementById('size');
   sizeBtn.innerHTML = "Size: " + c.curSizeName;
@@ -166,34 +191,4 @@
     c.changeColor();
     colorBtn.innerHTML = "Color: " + c.curColorName;
   };
-
-  var newLayerBtn = document.getElementById('new-layer');
-  newLayerBtn.innerHTML = "Layer: " + c.curLayerIndex;
-  var layers = document.getElementById('layers');
-  var newDiv = document.createElement('DIV');
-  newDiv.index = c.curLayerIndex;
-  newDiv.onclick = function() {
-    c.layers[this.index].drawToCanvas = (c.layers[this.index].drawToCanvas) ? false : true;
-  };
-  var newDivText = document.createTextNode("Layer: " + c.curLayerIndex);
-  newDiv.appendChild(newDivText);
-  layers.appendChild(newDiv);
-  newLayerBtn.onclick = function() {
-    c.createNewLayer();
-    newLayerBtn.innerHTML = "Layer: " + c.curLayerIndex;
-    var layers = document.getElementById('layers');
-    var newDiv = document.createElement('DIV');
-    newDiv.index = c.curLayerIndex;
-    newDiv.onclick = function() {
-      c.layers[this.index].drawToCanvas = (c.layers[this.index].drawToCanvas) ? false : true;
-    };
-    var newDivText = document.createTextNode("Layer: " + c.curLayerIndex);
-    newDiv.appendChild(newDivText);
-    layers.appendChild(newDiv);
-  };
-
-  // Create a "Layer" class
-  // One instance of Layer will hold all activity drawn to that layer.
-  // Layers can be selected at random -- changes will only affect selected layer
-  // Layers can be re-ordered
 })();
