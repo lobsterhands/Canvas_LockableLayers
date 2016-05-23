@@ -1,5 +1,8 @@
 /**
  * Created by Lyle Denman on 5/22/16.
+ * 
+ * This started with a lot of help from: 
+ * http://www.williammalone.com/articles/create-html5-canvas-javascript-drawing-app/
  */
 (function(){
   var canvas = document.getElementById('canvas');
