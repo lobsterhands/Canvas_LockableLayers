@@ -75,11 +75,11 @@
     newLayerBtn.onclick = function() {
       c.createNewLayer();
     };
-    newLayerBtn.innerHTML = "Layer: " + this.curLayerIndex;
+    newLayerBtn.innerHTML = "Layers: " + (this.curLayerIndex + 1);
     var layers = document.getElementById('layers');
     var newDiv = document.createElement('DIV');
     newDiv.index = this.curLayerIndex;
-    var newDivText = document.createTextNode("Layer: " + this.curLayerIndex);
+    var newDivText = document.createTextNode("Layer: " + (this.curLayerIndex + 1));
     newDiv.appendChild(newDivText);
     layers.appendChild(newDiv);
     this.appendHideCheckbox(newDiv);
@@ -109,10 +109,26 @@
     var checkbox = document.createElement('input');
     checkbox.type = "checkbox";
     checkbox.name = "current";
-    checkbox.id = parent.index;
+    checkbox.index = parent.index;
+    checkbox.id = "current" + checkbox.index;
     checkbox.checked = true;
+    var currentCheckboxes = document.getElementsByName('current');
+    for (var i = 0; i < currentCheckboxes.length; i++) {
+      if (i != this.curLayerIndex) {
+        currentCheckboxes[i].checked = false;
+      }
+    }
     checkbox.onclick = () => {
-      this.curLayerIndex = checkbox.id;
+      this.curLayerIndex = checkbox.index;
+      var currentCheckboxes = document.getElementsByName('current');
+      for (var i = 0; i < currentCheckboxes.length; i++) {
+        if (i != this.curLayerIndex) {
+          currentCheckboxes[i].checked = false;
+        }
+      }
+      if (checkbox.checked == false) {
+        this.curLayerIndex = -1;
+      }
     };
 
     var label = document.createElement('label');
@@ -185,13 +201,19 @@
 
   CanvasState.prototype.listenMouseDown = function() {
     this.canvas.addEventListener('mousedown', (e) => {
-      if (this.layers[this.curLayerIndex].drawToCanvas) {
-        this.paint = true;
-        this.addClick(e.offsetX, e.offsetY, false); // Pass mouse coordinates
-        // Passing 'false' for 'dragging' ensures there is not an undesired line
-        // drawn between the last point of mouseUp and the current mouseDown
-        this.redraw();
+      if (this.curLayerIndex == -1) {
+        alert('No layer selected!');
+        return;
       }
+      if (!this.layers[this.curLayerIndex].drawToCanvas) {
+        alert("Can't draw to a hidden layer.");
+        return;
+      }
+      this.paint = true;
+      this.addClick(e.offsetX, e.offsetY, false); // Pass mouse coordinates
+      // Passing 'false' for 'dragging' ensures there is not an undesired line
+      // drawn between the last point of mouseUp and the current mouseDown
+      this.redraw();
     });
   };
 
