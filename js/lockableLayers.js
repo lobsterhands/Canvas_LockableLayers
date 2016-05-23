@@ -73,6 +73,10 @@
     var newLayerBtn = document.getElementById('new-layer');
 
     newLayerBtn.onclick = function() {
+      if (c.layers.length > 4) {
+        alert("You've reached the current layer limit.");
+        return;
+      }
       c.createNewLayer();
     };
     newLayerBtn.innerHTML = "Layers: " + (this.curLayerIndex + 1);
