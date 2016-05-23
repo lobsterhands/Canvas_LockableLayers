@@ -60,6 +60,7 @@
 
     this.layers = []; // Store all layers
     this.curLayerIndex = -1; // curLayerIndex is incremented in createNewLayer()
+    this.noLayerSelected = false;
     this.createNewLayer();
   };
 
@@ -70,6 +71,7 @@
   };
 
   CanvasState.prototype.createNewLayerDiv = function() {
+    this.noLayerSelected = false;
     var newLayerBtn = document.getElementById('new-layer');
 
     newLayerBtn.onclick = function() {
@@ -77,9 +79,9 @@
         alert("You've reached the current layer limit.");
         return;
       }
-      c.createNewLayer();
+      c.createNewLayer(); // @lyle: This shouldn't be called by c
     };
-    newLayerBtn.innerHTML = "Layers: " + (this.curLayerIndex + 1);
+    newLayerBtn.innerHTML = "Create new Layer";
     var layers = document.getElementById('layers');
     var newDiv = document.createElement('DIV');
     newDiv.index = this.curLayerIndex;
@@ -123,7 +125,9 @@
       }
     }
     checkbox.onclick = () => {
-      this.curLayerIndex = checkbox.index;
+      if (checkbox.checked) {
+        this.curLayerIndex = checkbox.index;
+      }
       var currentCheckboxes = document.getElementsByName('current');
       for (var i = 0; i < currentCheckboxes.length; i++) {
         if (i != this.curLayerIndex) {
@@ -131,7 +135,9 @@
         }
       }
       if (checkbox.checked == false) {
-        this.curLayerIndex = -1;
+        this.noLayerSelected = true;
+      } else {
+        this.noLayerSelected = false;
       }
     };
 
@@ -205,7 +211,7 @@
 
   CanvasState.prototype.listenMouseDown = function() {
     this.canvas.addEventListener('mousedown', (e) => {
-      if (this.curLayerIndex == -1) {
+      if (this.noLayerSelected) {
         alert('No layer selected!');
         return;
       }
@@ -222,7 +228,7 @@
   };
 
   var c = new CanvasState(canvas); // Create instance of CanvasState
-
+  
   var sizeBtn = document.getElementById('size');
   sizeBtn.innerHTML = "Size: " + c.curSizeName;
   sizeBtn.onclick = function() {
