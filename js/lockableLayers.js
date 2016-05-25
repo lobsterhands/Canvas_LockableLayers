@@ -21,7 +21,6 @@
     this.drawToCanvas = true; // Toggled by checkbox: Hide
   };
 
-
   /************************/
   /***** CANVAS CLASS *****/
   /************************/
@@ -37,6 +36,10 @@
       {text: "Green", hex: "#00FF00"}, {text: "Blue", hex: "#0000FF"}];
     this.curColorIndex = 0;
     this.curColorName = this.colors[this.curColorIndex].text;
+
+    this.tools = [{text: "Pen"}, {text: "Eraser"}];
+    this.curToolIndex = 0;
+    this.curToolName = this.tools[this.curToolIndex].text;
 
     this.sizes = [{text: "Tiny", radius: 2}, {text: "Small", radius: 5},
       {text: "Medium", radius: 10}, {text: "Large", radius: 15}];
@@ -142,7 +145,11 @@
     this.layers[this.curLayerIndex].clickX.push(x);
     this.layers[this.curLayerIndex].clickY.push(y);
     this.layers[this.curLayerIndex].clickDrag.push(dragging);
-    this.layers[this.curLayerIndex].clickColor.push(this.colors[this.curColorIndex].hex);
+    if (this.curToolName != "Eraser") {
+      this.layers[this.curLayerIndex].clickColor.push(this.colors[this.curColorIndex].hex);
+    } else {
+      this.layers[this.curLayerIndex].clickColor.push("#FFFFFF");
+    }
     this.layers[this.curLayerIndex].clickSize.push(this.sizes[this.curSizeIndex].radius);
   };
 
@@ -177,6 +184,11 @@
   CanvasState.prototype.changeColor = function() {
     this.curColorIndex = (this.curColorIndex + 1) % this.colors.length;
     this.curColorName = this.colors[this.curColorIndex].text;
+  };
+
+  CanvasState.prototype.changeTool = function() {
+    this.curToolIndex = (this.curToolIndex + 1) % this.tools.length;
+    this.curToolName = this.tools[this.curToolIndex].text;
   };
 
   CanvasState.prototype.listenMouseMove = function() {
@@ -227,4 +239,13 @@
     c.changeColor();
     colorBtn.innerHTML = "Color: " + c.curColorName;
   };
+
+  var toolBtn = document.getElementById('tool');
+  toolBtn.innerHTML = "Tool: " + c.curToolName;
+  toolBtn.onclick = function() {
+    c.changeTool();
+    toolBtn.innerHTML = "Tool: " + c.curToolName;
+  }
+
+
 })();
